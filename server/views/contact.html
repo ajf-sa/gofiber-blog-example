@@ -1,0 +1,45 @@
+<div class="container">
+    <br>
+    <legend class="text-center">نرغب بالتواصل معك</legend>
+	<div class="row rtl">
+      <div class="col-md-12">
+        <div class=" well well-sm">
+          <form class="form-horizontal" action="/contact" method="post">
+          <fieldset>
+            
+            <!-- Name input-->
+            <div class="form-group text-right">
+              <label class="col-md-12 control-label" for="name">الاسم</label>
+              <div class="col-md-12">
+                <input id="name" name="name" type="text" value="{{.Name}}" placeholder="Your name" class="form-control">
+              </div>
+            </div>
+    
+            <!-- Email input-->
+            <div class="form-group text-right">
+              <label class="col-md-12 control-label" for="email">البريد الالكتروني</label>
+              <div class="col-md-12">
+                <input id="email" name="email" type="text" value="{{.Email}}" placeholder="Your email" class="form-control">
+              </div>
+            </div>
+    
+            <!-- Message body -->
+            <div class="form-group text-right">
+              <label class="col-md-12 control-label" for="message">نص الرسالة</label>
+              <div class="col-md-12">
+                <textarea class="form-control" id="message" name="message" value="{{.Message}}" placeholder="Please enter your message here..." rows="5"></textarea>
+              </div>
+            </div>
+    
+            <!-- Form actions -->
+            <div class="form-group">
+              <div class="col-md-12 text-right">
+                <button type="submit" class="btn btn-primary btn-lg">ارسال</button>
+              </div>
+            </div>
+          </fieldset>
+          </form>
+        </div>
+      </div>
+	</div>
+</div>

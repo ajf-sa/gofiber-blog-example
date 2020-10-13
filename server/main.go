@@ -28,6 +28,12 @@ type Post struct {
 	Content string `json:"content"`
 }
 
+type Contact struct {
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Message string `json:"message"`
+}
+
 var posts = []Post{
 	{Title: "first post", Date: func() string { return "test" }, Content: "this is content"},
 	{Title: "second post", Date: func() string { return "test" }, Content: "this is content"},
@@ -77,7 +83,17 @@ func main() {
 	})
 
 	app.Get("/contact", func(ctx *fiber.Ctx) error {
-		return ctx.Render("contact", fiber.Map{"Title": title, "ContactActive": true}, "layout")
+		contact := new(Contact)
+		return ctx.Render("contact", fiber.Map{"Title": title, "ContactActive": true, "contact": contact}, "layout")
+	})
+	app.Post("/contact", func(ctx *fiber.Ctx) error {
+		var contact Contact
+		err := ctx.BodyParser(&contact)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Println(contact)
+		return ctx.Render("contact", fiber.Map{"Title": title, "ContactActive": true, "contact": contact}, "layout")
 	})
 
 	app.Get("/about", func(ctx *fiber.Ctx) error {
