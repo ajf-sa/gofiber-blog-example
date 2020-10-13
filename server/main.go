@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"github.com/joho/godotenv"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -50,6 +52,12 @@ var posts = []Post{
 var context = fiber.Map{"Title": "Blog"}
 var title = "عنوان الموقع"
 
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
 func main() {
 
 	engine := html.New("./views", ".html")
