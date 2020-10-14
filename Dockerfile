@@ -5,7 +5,7 @@ RUN apk add build-base
 RUN go build -o /go/bin/server
 
 FROM alpine:3.12.0
-COPY server/.env ./
+COPY server/prod.env ./.env
 COPY server/public ./public
 COPY server/views ./views
 
