@@ -31,6 +31,24 @@ func (q *Queries) CreatePage(ctx context.Context, arg CreatePageParams) (Page, e
 	return i, err
 }
 
+const getPageBySlug = `-- name: GetPageBySlug :one
+select id, title, slug, body, is_active, create_at from pages where slug=$1 limit 1 offset 0
+`
+
+func (q *Queries) GetPageBySlug(ctx context.Context, slug string) (Page, error) {
+	row := q.queryRow(ctx, q.getPageBySlugStmt, getPageBySlug, slug)
+	var i Page
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Slug,
+		&i.Body,
+		&i.IsActive,
+		&i.CreateAt,
+	)
+	return i, err
+}
+
 const listPage = `-- name: ListPage :many
 SELECT id, title, slug, body, is_active, create_at FROM pages
 `

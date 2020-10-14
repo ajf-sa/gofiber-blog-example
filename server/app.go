@@ -56,7 +56,6 @@ func main() {
 	hn := handlers.NewHandler(entity)
 	app.Static("/static", "public")
 
-	app.Get("/", hn.Index)
 	app.Get("/robots.txt", hn.Robots)
 	app.Get("/contact", hn.GetContact)
 	app.Get("/contact", hn.PostContact)
@@ -65,5 +64,7 @@ func main() {
 	app.Get("/login", hn.Login)
 	app.Get("/logout", hn.Logout)
 	app.Get("/register", hn.Register)
+	app.Get("/:slug", hn.PageBySlug)
+	app.Get("/", hn.Index)
 	log.Fatal(app.Listen(":3000"))
 }

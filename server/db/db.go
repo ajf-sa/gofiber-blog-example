@@ -25,6 +25,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createPageStmt, err = db.PrepareContext(ctx, createPage); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePage: %w", err)
 	}
+	if q.getPageBySlugStmt, err = db.PrepareContext(ctx, getPageBySlug); err != nil {
+		return nil, fmt.Errorf("error preparing query GetPageBySlug: %w", err)
+	}
 	if q.listPageStmt, err = db.PrepareContext(ctx, listPage); err != nil {
 		return nil, fmt.Errorf("error preparing query ListPage: %w", err)
 	}
@@ -36,6 +39,11 @@ func (q *Queries) Close() error {
 	if q.createPageStmt != nil {
 		if cerr := q.createPageStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPageStmt: %w", cerr)
+		}
+	}
+	if q.getPageBySlugStmt != nil {
+		if cerr := q.getPageBySlugStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getPageBySlugStmt: %w", cerr)
 		}
 	}
 	if q.listPageStmt != nil {
@@ -80,17 +88,19 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db             DBTX
-	tx             *sql.Tx
-	createPageStmt *sql.Stmt
-	listPageStmt   *sql.Stmt
+	db                DBTX
+	tx                *sql.Tx
+	createPageStmt    *sql.Stmt
+	getPageBySlugStmt *sql.Stmt
+	listPageStmt      *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:             tx,
-		tx:             tx,
-		createPageStmt: q.createPageStmt,
-		listPageStmt:   q.listPageStmt,
+		db:                tx,
+		tx:                tx,
+		createPageStmt:    q.createPageStmt,
+		getPageBySlugStmt: q.getPageBySlugStmt,
+		listPageStmt:      q.listPageStmt,
 	}
 }
