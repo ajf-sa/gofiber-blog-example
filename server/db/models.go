@@ -8,9 +8,9 @@ import (
 
 type Page struct {
 	ID       int32
-	ParentID int32
 	Title    string
 	Slug     string
 	Body     string
+	IsActive bool
 	CreateAt time.Time
 }

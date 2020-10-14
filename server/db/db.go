@@ -25,6 +25,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createPageStmt, err = db.PrepareContext(ctx, createPage); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePage: %w", err)
 	}
+	if q.listPageStmt, err = db.PrepareContext(ctx, listPage); err != nil {
+		return nil, fmt.Errorf("error preparing query ListPage: %w", err)
+	}
 	return &q, nil
 }
 
@@ -33,6 +36,11 @@ func (q *Queries) Close() error {
 	if q.createPageStmt != nil {
 		if cerr := q.createPageStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPageStmt: %w", cerr)
+		}
+	}
+	if q.listPageStmt != nil {
+		if cerr := q.listPageStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing listPageStmt: %w", cerr)
 		}
 	}
 	return err
@@ -75,6 +83,7 @@ type Queries struct {
 	db             DBTX
 	tx             *sql.Tx
 	createPageStmt *sql.Stmt
+	listPageStmt   *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
@@ -82,5 +91,6 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		db:             tx,
 		tx:             tx,
 		createPageStmt: q.createPageStmt,
+		listPageStmt:   q.listPageStmt,
 	}
 }

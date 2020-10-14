@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"time"
 
 	"github.com/alfuhigi/gofiber-blog-example/db"
 	"github.com/alfuhigi/gofiber-blog-example/providers"
@@ -83,12 +81,18 @@ func main() {
 	})
 
 	app.Get("/", func(ctx *fiber.Ctx) error {
-		page, err := entity.CreatePage(ctx.Context(), db.CreatePageParams{Title: "title", Slug: time.Now().String(), Body: "wef"})
+		// //TODO remove this
+		// _, err := entity.CreatePage(ctx.Context(), db.CreatePageParams{Title: "title", Slug: time.Now().String(), Body: "wef"})
+		// if err != nil {
+		// 	log.Println(err)
+		// }
+
+		pages, _ := entity.ListPage(ctx.Context())
+
 		if err != nil {
 			log.Println(err)
 		}
-		fmt.Println(page)
-		return ctx.Render("index", fiber.Map{"Title": title, "HomeActive": true, "posts": posts}, "layout")
+		return ctx.Render("index", fiber.Map{"Title": title, "HomeActive": true, "posts": pages}, "layout")
 	})
 
 	app.Get("/contact", func(ctx *fiber.Ctx) error {
