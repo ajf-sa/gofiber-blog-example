@@ -1,7 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"time"
+
+	"github.com/alfuhigi/gofiber-blog-example/db"
+	"github.com/alfuhigi/gofiber-blog-example/providers"
 
 	"github.com/joho/godotenv"
 
@@ -58,14 +63,13 @@ var posts = []Post{
 var context = fiber.Map{"Title": "Blog"}
 var title = "عنوان الموقع"
 
-func init() {
+func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-}
-func main() {
 
+	entity := db.NewEntity(providers.Connect())
 	engine := html.New("./views", ".html")
 	app := fiber.New(fiber.Config{Views: engine})
 	app.Use(logger.New())
@@ -79,6 +83,11 @@ func main() {
 	})
 
 	app.Get("/", func(ctx *fiber.Ctx) error {
+		page, err := entity.CreatePage(ctx.Context(), db.CreatePageParams{Title: "title", Slug: time.Now().String(), Body: "wef"})
+		if err != nil {
+			log.Println(err)
+		}
+		fmt.Println(page)
 		return ctx.Render("index", fiber.Map{"Title": title, "HomeActive": true, "posts": posts}, "layout")
 	})
 
