@@ -3,12 +3,11 @@ package main
 import (
 	"log"
 
-	"github.com/alfuhigi/gofiber-blog-example/handlers"
+	"github.com/alfuhigi/gofiber-blog-example/middleware"
 
 	"github.com/alfuhigi/gofiber-blog-example/db"
+	"github.com/alfuhigi/gofiber-blog-example/handlers"
 	"github.com/alfuhigi/gofiber-blog-example/providers"
-
-	"github.com/joho/godotenv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -39,12 +38,7 @@ var context = fiber.Map{"Title": "Blog"}
 var title = "عنوان الموقع"
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
 
-	entity := db.NewEntity(providers.Connect())
 	engine := html.New("./views", ".html")
 	app := fiber.New(fiber.Config{Views: engine})
 	app.Use(logger.New())
@@ -53,18 +47,29 @@ func main() {
 		Level: compress.LevelBestSpeed,
 	}))
 
-	hn := handlers.NewHandler(entity)
 	app.Static("/static", "public")
 
+	SetupRoutes(app)
+
+	log.Fatal(app.Listen(":3000"))
+}
+
+func SetupRoutes(a *fiber.App) {
+	entity := db.NewEntity(providers.Connect())
+	hn := handlers.NewHandler(entity)
+	app := a.Group("/")
+	app.Get("/login", hn.Login)
+	app.Post("/login", hn.TryLogin)
+	app.Get("/createpage", middleware.Protected(), hn.CreateNewPage)
 	app.Get("/robots.txt", hn.Robots)
 	app.Get("/contact", hn.GetContact)
 	app.Get("/contact", hn.PostContact)
 	app.Get("/about", hn.About)
 
-	app.Get("/login", hn.Login)
+	// app.Get("/login", hn.Login)
 	app.Get("/logout", hn.Logout)
 	app.Get("/register", hn.Register)
 	app.Get("/:slug", hn.PageBySlug)
-	app.Get("/", hn.Index)
-	log.Fatal(app.Listen(":3000"))
+	app.Get("/", middleware.Protected(), hn.Index)
+
 }

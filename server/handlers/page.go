@@ -51,6 +51,7 @@ func (h Handler) PageBySlug(ctx *fiber.Ctx) error {
 	page, err := h.GetPageBySlug(ctx.Context(), slug)
 	if err != nil {
 		log.Println(err)
+		return ctx.Redirect("/", fiber.StatusPermanentRedirect)
 	}
 	return ctx.Render("landpage", fiber.Map{"WebsitTitle": "title", "page": page}, "layout")
 
@@ -84,4 +85,8 @@ func (h Handler) About(ctx *fiber.Ctx) error {
 
 func (h Handler) Robots(ctx *fiber.Ctx) error {
 	return ctx.Render("robots", nil)
+}
+
+func (h *Handler) CreateNewPage(ctx *fiber.Ctx) error {
+	return ctx.SendString("I am Protected !")
 }
