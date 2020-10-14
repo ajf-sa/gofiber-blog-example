@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"github.com/alfuhigi/gofiber-blog-example/handlers"
+
 	"github.com/alfuhigi/gofiber-blog-example/db"
 	"github.com/alfuhigi/gofiber-blog-example/providers"
 
@@ -31,32 +33,7 @@ type Post struct {
 	Content string `json:"content"`
 }
 
-type Contact struct {
-	Name    string `json:"name"`
-	Email   string `json:"email"`
-	Message string `json:"message"`
-}
-
-var posts = []Post{
-	{Title: "first post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "second post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "third post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-	{Title: "forth post", Date: func() string { return "test" }, Content: "this is content"},
-}
+var posts = []Post{}
 
 var context = fiber.Map{"Title": "Blog"}
 var title = "عنوان الموقع"
@@ -75,54 +52,18 @@ func main() {
 	app.Use(compress.New(compress.Config{
 		Level: compress.LevelBestSpeed,
 	}))
+
+	hn := handlers.NewHandler(entity)
 	app.Static("/static", "public")
-	app.Get("/robots.txt", func(ctx *fiber.Ctx) error {
-		return ctx.Render("robots", nil)
-	})
 
-	app.Get("/", func(ctx *fiber.Ctx) error {
-		// //TODO remove this
-		// _, err := entity.CreatePage(ctx.Context(), db.CreatePageParams{Title: "title", Slug: time.Now().String(), Body: "wef"})
-		// if err != nil {
-		// 	log.Println(err)
-		// }
+	app.Get("/", hn.Index)
+	app.Get("/robots.txt", hn.Robots)
+	app.Get("/contact", hn.GetContact)
+	app.Get("/contact", hn.PostContact)
+	app.Get("/about", hn.About)
 
-		pages, _ := entity.ListPage(ctx.Context())
-
-		if err != nil {
-			log.Println(err)
-		}
-		return ctx.Render("index", fiber.Map{"Title": title, "HomeActive": true, "posts": pages}, "layout")
-	})
-
-	app.Get("/contact", func(ctx *fiber.Ctx) error {
-		contact := new(Contact)
-		return ctx.Render("contact", fiber.Map{"Title": title, "ContactActive": true, "contact": contact}, "layout")
-	})
-	app.Post("/contact", func(ctx *fiber.Ctx) error {
-		var contact Contact
-		err := ctx.BodyParser(&contact)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Println(contact)
-		return ctx.Render("contact", fiber.Map{"Title": title, "ContactActive": true, "contact": contact}, "layout")
-	})
-
-	app.Get("/about", func(ctx *fiber.Ctx) error {
-		return ctx.Render("about", fiber.Map{"Title": title, "AboutActive": true}, "layout")
-	})
-
-	app.Get("/login", func(ctx *fiber.Ctx) error {
-		return ctx.Render("login", fiber.Map{"Title": title, "LoginActive": true}, "layout")
-	})
-	app.Get("/logout", func(ctx *fiber.Ctx) error {
-		return nil
-	})
-
-	app.Get("/register", func(ctx *fiber.Ctx) error {
-		return ctx.Render("register", fiber.Map{"Title": title, "RegisterActive": true}, "layout")
-	})
-
+	app.Get("/login", hn.Login)
+	app.Get("/logout", hn.Logout)
+	app.Get("/register", hn.Register)
 	log.Fatal(app.Listen(":3000"))
 }
