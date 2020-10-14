@@ -2,20 +2,18 @@ package handlers
 
 import (
 	"log"
-	"time"
 
-	"github.com/alfuhigi/gofiber-blog-example/db"
 	"github.com/gofiber/fiber/v2"
 )
 
 func (h *Handler) Index(ctx *fiber.Ctx) error {
 	// //TODO remove this
-	_, err := h.CreatePage(ctx.Context(), db.CreatePageParams{Title: "title", Slug: time.Now().String(), Body: "wef"})
-	if err != nil {
-		log.Println(err)
-	}
+	// _, err := h.CreatePage(ctx.Context(), db.CreatePageParams{Title: "title", Slug: time.Now().String(), Body: "wef"})
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 
-	pages, _ := h.ListPage(ctx.Context())
+	pages, err := h.ListPage(ctx.Context())
 
 	if err != nil {
 		log.Println(err)

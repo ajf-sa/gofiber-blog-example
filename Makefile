@@ -2,7 +2,7 @@
 build:
 	docker build . -t gofiber-blog
 run:
-	docker run -p 3000:3000 gofiber-blog
+	docker run --network ns2020-existing-network -p 3000:3000 gofiber-blog
 createdb:
 	docker exec -it db01 createdb --username=admin --owner=admin gofiber-blog-api-1
 dropdb:
